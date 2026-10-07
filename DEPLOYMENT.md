@@ -30,18 +30,15 @@ For later changes, review the files being committed, then use `git add`, `git co
 5. Deploy the two custom storefront paths from the Git checkout into the live `wp-content/mu-plugins/` directory. Keep `.git` and this document outside the public web root. Do not use a whole-site copy with deletion enabled.
 6. Regenerate Elementor CSS/data, resave permalinks, clear caches, and test the home, shop, product, cart, checkout, account, images, email, shipping, payments, and webhook flows before opening the store to customers.
 
-## Hostinger hPanel deployment
+## Hostinger deployment from GitHub Actions
 
-Hostinger's current Git integration is under **Websites → Dashboard → Advanced → Git**. It connects to GitHub through OAuth, lets you select a repository and branch, and can automatically deploy subsequent pushes. The **Root directory** defaults to `public_html` and can be changed. Hostinger warns that changing or disconnecting the deployment repository can overwrite data in the target directory.
+The repository has a GitHub Actions workflow at `.github/workflows/deploy-storefront.yml`. A push to `main` that changes the storefront or deployment workflow triggers it; it can also be run manually from GitHub's Actions tab. The workflow reads the repository secrets `FTP_USERNAME` and `FTP_PASSWORD`. Their values are stored in GitHub settings and are never committed.
 
-**Do not connect this `main` branch to `public_html` yet.** The branch contains only the custom storefront, while the live WordPress directory also needs core, plugins, `wp-config.php`, uploads, and other files. The repository's `wp-content/mu-plugins/` prefix also means it cannot be pointed directly at the live `mu-plugins` directory without preparing a separate deploy tree.
+The workflow connects to Hostinger at `147.93.17.234` on port `21` using explicit FTPS. It verifies the server certificate before reading the GitHub credentials and encrypts file transfers. It locates the WordPress installation at `/home/u246079467/domains/vyndra.in/public_html` or its FTP account equivalent, then verifies that `wp-load.php` and WooCommerce exist. It uploads only `vyndra-storefront.php` and the `vyndra-storefront/` directory into `wp-content/mu-plugins/`. It does not delete remote files or update the database, media, WordPress core, or other plugins. If the destination is not an existing WordPress/WooCommerce installation, the workflow stops without uploading.
 
-After the WordPress files, database, and media are migrated and the live destination is inspected, choose one of these safe setups:
+The hPanel FTP IP presents a certificate for Hostinger's `*.hstgr.io` domain, which the workflow checks along with the trusted certificate chain. If Hostinger changes that certificate identity, deployment stops before login so the connection can be reviewed. Do not copy any FTP password into this repository or share it in chat.
 
-1. Prepare a deployment branch whose root has only `vyndra-storefront.php` and `vyndra-storefront/`; point hPanel Git at that branch and the verified `public_html/wp-content/mu-plugins` directory, after confirming how hPanel handles existing files there.
-2. If that target cannot be safely managed by hPanel Git, use a GitHub Actions release over SSH/SFTP that copies only those two paths to the confirmed WordPress root, without deleting other files.
-
-The live domain, hosting plan, status of any existing store, and actual WordPress root are needed to select and validate the deployment target. Hostinger's [Git deployment guide](https://www.hostinger.com/support/1583302-how-to-deploy-a-git-repository-in-hostinger/) describes the current hPanel controls. Hostinger's [migration guide](https://www.hostinger.com/support/4455931-how-to-migrate-a-website-to-hostinger/) covers moving the files and database that Git does not contain.
+After pushing, check the **Deploy Vyndra storefront** run under the repository's **Actions** tab. A green run confirms only the custom code was uploaded. Complete the first migration steps above and verify the live store before accepting orders.
 
 Subsequent code releases should never reimport the local database. Coordinate dashboard plugin/theme updates with the live installation and back up the database before releases that run migrations.
 

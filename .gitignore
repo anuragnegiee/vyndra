@@ -2,6 +2,15 @@
 /*
 !/.gitignore
 !/DEPLOYMENT.md
+!/.github/
+
+/.github/*
+!/.github/scripts/
+!/.github/workflows/
+/.github/scripts/*
+!/.github/scripts/deploy_storefront.py
+/.github/workflows/*
+!/.github/workflows/deploy-storefront.yml
 !/wp-content/
 
 /wp-content/*
