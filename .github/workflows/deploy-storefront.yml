@@ -1,32 +1,31 @@
-name: Deploy Vyndra storefront
+name: Deploy Vyndra WordPress code
 
 on:
   push:
     branches: [main]
-    paths:
-      - .github/workflows/deploy-storefront.yml
-      - .github/scripts/deploy_storefront.py
-      - wp-content/mu-plugins/vyndra-storefront.php
-      - wp-content/mu-plugins/vyndra-storefront/**
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: vyndra-storefront-production
+  group: vyndra-production
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           persist-credentials: false
-      - name: Upload storefront to Hostinger
+      - name: Check deployment script syntax
+        run: python3 -m py_compile .github/scripts/deploy_storefront.py
+      - name: Upload tracked WordPress code to Hostinger
         env:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          GIT_BEFORE: ${{ github.event.before }}
         run: python3 .github/scripts/deploy_storefront.py

@@ -1,0 +1,6 @@
+Plugin Name:  Huepress
+Plugin URI:   https://www.qikink.com 
+Description:  A plugin to integrate your woocommerce site with Qikink. 
+Version:      1.0
+Author:       huepress
+License:      GPL2
