@@ -1,0 +1,30 @@
+# Only custom storefront code and deployment notes are committed.
+/*
+!/.gitignore
+!/DEPLOYMENT.md
+!/wp-content/
+
+/wp-content/*
+!/wp-content/mu-plugins/
+
+/wp-content/mu-plugins/*
+!/wp-content/mu-plugins/vyndra-storefront.php
+!/wp-content/mu-plugins/vyndra-storefront/
+
+# Defense in depth if the allowlist is widened later.
+wp-config.php
+wp-config-*.php
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.sql
+*.sql.*
+*.log
+*.bak
+*.backup
+*.zip
+*.wpress
+node_modules/
